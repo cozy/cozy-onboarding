@@ -3,8 +3,8 @@ module.exports = {
     route: 'register/accounts',
     view: 'steps/accounts',
 
-    isActive: (user) ->
-        return user.apps && 'konnectors' in user.apps
+    isActive: (instance) ->
+        return instance.apps && 'konnectors' in instance.apps
 
     save: (data) ->
         onboardedSteps = [

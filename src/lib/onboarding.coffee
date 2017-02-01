@@ -8,13 +8,15 @@ class Step
     # Retrieves properties from config Step plain object
     # @param step : config step, i.e. plain object containing custom properties
     #   and methods.
-    constructor: (step={}, user={}) ->
+    constructor: (options={}) ->
+        {step, instance} = options
+
         [
           'name',
           'route',
           'view',
           'isActive',
-          'fetchUser',
+          'fetchInstance',
           'fetchData',
           'getData',
           'validate',
@@ -23,17 +25,6 @@ class Step
         ].forEach (property) =>
             if step[property]?
                 @[property] = step[property]
-
-        @fetchUser user
-
-
-    # Map some user properties to current step object
-    # @param user : JS object representing the user.
-    # This method can be overriden by passing another fetchUser function
-    # in constructor parameters
-    fetchUser: (user={}) ->
-        @publicName = user.public_name
-
 
     # Returns data related to step.
     # This is a default method that may be overriden
@@ -82,12 +73,12 @@ class Step
                 handler(@, error)
 
 
-    # Returns true if the step has to be submitted by the user
+    # Returns true if the step has to be submitted by the instance
     # This method returns true by default, but can be overriden
     # by config steps
-    # @param user : plain JS object. Not used in this abstract default method
+    # @param instance : plain JS object. Not used in this abstract default method
     #  but should be in overriding ones.
-    isActive: (user) ->
+    isActive: (instance) ->
         return true
 
 
@@ -180,18 +171,17 @@ module.exports = class Onboarding
     initialize: (options={}) ->
         {steps, registerToken} = options
 
-        # Todo : fetch from stack
-        user = {}
-        onboardedSteps = []
-
         throw new Error 'Missing mandatory `steps` parameter' unless steps
         throw new Error '`steps` parameter is empty' unless steps.length
 
-        @user = user
+        # Todo : fetch from stack
+        instance = {}
+        onboardedSteps = []
+
         @steps = steps
             .reduce (activeSteps, step) =>
-                stepModel = new Step step, user
-                if stepModel.isActive user
+                stepModel = new Step step, instance
+                if stepModel.isActive instance
                     activeSteps.push stepModel
                     stepModel.onCompleted @handleStepCompleted
                     stepModel.onFailed @handleStepError
@@ -202,6 +192,14 @@ module.exports = class Onboarding
             return not (step.name in onboardedSteps)
 
         @currentStep ?= @steps[0]
+
+
+    # Map some instance properties to current step object
+    # @param instance : JS object representing the instance.
+    # This method can be overriden by passing another fetchInstance function
+    # in constructor parameters
+    fetchInstance: (instance) ->
+        @publicName = instance.public_name
 
 
     # Records handler for 'stepChanged' pseudo-event, triggered when

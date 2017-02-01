@@ -16,8 +16,8 @@ module.exports = {
     name: 'infos',
     route: 'register/infos',
     view : 'steps/infos',
-    isActive: (user) ->
-        return not user?.hasValidInfos
+    isActive: (instance) ->
+        return not instance?.hasValidInfos
 
 
     getData: () ->
@@ -28,7 +28,7 @@ module.exports = {
 
 
     fetchData: () ->
-        return fetch '/user?fields=public_name,email,timezone',
+        return fetch '/settings/instance',
             method: 'GET',
             credentials: 'include',
         .then (response) =>
