@@ -13,7 +13,7 @@ module.exports = {
       {
         test: /\.styl$/,
         loader: ExtractTextPlugin.extract('style', [
-          'css?importLoaders=1&modules',
+          'css?importLoaders=1',
           'postcss',
           'stylus'
         ])
