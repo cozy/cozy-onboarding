@@ -1,9 +1,9 @@
 {
-  "name": "{app-name}",
-  "slug": "{app-slug}",
+  "name": "Onboarding",
+  "slug": "cozy-register",
   "icon": "icon.svg",
-  "description": "{app-description}",
-  "source": "{app-repo}",
+  "description": "Register application for Cozy v3",
+  "source": "http://github.com/cozy/cozy-register",
   "developer": {
     "name": "Cozy",
     "url": "https://cozy.io"
@@ -13,9 +13,10 @@
   "version": "3.0.0",
   "licence": "AGPL-3.0",
   "permissions": {
-    "settings/locale": {
-      "description": "Required to display a localized Ui",
-      "access": "read"
+    "instance": {
+      "description": "Required to register user",
+      "type": "io.cozy.instances",
+      "verbs": ["GET", "POST", "PUT"]
     }
   }
 }
