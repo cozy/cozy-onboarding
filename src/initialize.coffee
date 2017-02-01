@@ -51,4 +51,4 @@ Trigger locale initilization and starts application singleton.
 ###
 document.addEventListener 'DOMContentLoaded', ->
     initLocale()
-    app.start registerToken: getQueryStringParam('rt')
+    app.start registerToken: getQueryStringParam('registerToken')

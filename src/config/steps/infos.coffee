@@ -17,7 +17,7 @@ module.exports = {
     route: 'register/infos',
     view : 'steps/infos',
     isActive: (user) ->
-        return not user.hasValidInfos
+        return not user?.hasValidInfos
 
 
     getData: () ->

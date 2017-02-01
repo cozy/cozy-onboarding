@@ -31,8 +31,7 @@ class App extends Application
         AppStyles = require './styles/app.styl'
 
         @on 'start', (options)=>
-
-            @initializeRouter()
+            @initializeRouter registerToken: options.registerToken
             @layout = new AppLayout()
             @layout.render()
 
@@ -45,8 +44,14 @@ class App extends Application
     # Initialize routes relative to onboarding step.
     # The idea is to configure the router externally as a "native"
     # Backbone Router
-    initializeRouter: () =>
+    initializeRouter: (options) =>
         @router = new Backbone.Router()
+
+        @router.route \
+            '',
+            'default',
+            => @handleDefaultRoute registerToken: options.registerToken
+
         # if onboarding, the pathname will be '/register*'
         @router.route \
             'register(/:step)',
@@ -65,6 +70,12 @@ class App extends Application
             'password/reset/:key',
             'resetPassword',
             @handleResetPassword
+
+
+    # Handle default route
+    handleDefaultRoute: (options) ->
+      @onboarding ?= @initializeOnboarding options
+      @onboarding.goToStep @onboarding.getCurrentStep()
 
 
     # Internal handler called when the onboarding's internal step has just
@@ -90,16 +101,13 @@ class App extends Application
 
 
     # Initialize the onboarding component
-    initializeOnboarding: ->
+    initializeOnboarding: (options)->
         steps = require './config/steps/all'
 
-        user = {
-            public_name: ENV.public_name
-            hasValidInfos: ENV.hasValidInfos,
-            apps: ENV.apps
-        }
+        onboarding = new Onboarding \
+            steps: steps,
+            registerToken: options.registerToken
 
-        onboarding = new Onboarding(user, steps, ENV.onboardedSteps)
         onboarding.onStepChanged (step) => @handleStepChanged(step)
         onboarding.onStepFailed (step, err) => @handleStepFailed(step, err)
         onboarding.onDone () => @handleTriggerDone()

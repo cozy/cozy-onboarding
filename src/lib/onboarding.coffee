@@ -173,11 +173,17 @@ class Step
 module.exports = class Onboarding
 
 
-    constructor: (user, steps, onboardedSteps = []) ->
-        @initialize user, steps, onboardedSteps
+    constructor: (options={}) ->
+        @initialize options
 
 
-    initialize: (user, steps, onboardedSteps) ->
+    initialize: (options={}) ->
+        {steps, registerToken} = options
+
+        # Todo : fetch from stack
+        user = {}
+        onboardedSteps = []
+
         throw new Error 'Missing mandatory `steps` parameter' unless steps
         throw new Error '`steps` parameter is empty' unless steps.length
 
