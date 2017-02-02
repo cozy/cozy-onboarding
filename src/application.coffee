@@ -73,16 +73,17 @@ class App extends Application
 
 
     # Handle default route
-    handleDefaultRoute: (options) ->
-      @onboarding ?= @initializeOnboarding options
-      @onboarding.goToStep @onboarding.getCurrentStep()
+    handleDefaultRoute: (options) =>
+      @initializeOnboarding options
+        .then (onboarding) =>
+          onboarding.start()
 
 
     # Internal handler called when the onboarding's internal step has just
     # changed.
     # @param step Step instance
-    handleStepChanged: (step) ->
-        @showStep step
+    handleStepChanged: (onboarding, step) ->
+        @showStep onboarding, step
 
 
     # Internal handler called when the onboarding is finished
@@ -104,15 +105,14 @@ class App extends Application
     initializeOnboarding: (options)->
         steps = require './config/steps/all'
 
-        onboarding = new Onboarding \
+        onboarding = new Onboarding()
+
+        return onboarding.initialize \
             steps: steps,
-            registerToken: options.registerToken
-
-        onboarding.onStepChanged (step) => @handleStepChanged(step)
-        onboarding.onStepFailed (step, err) => @handleStepFailed(step, err)
-        onboarding.onDone () => @handleTriggerDone()
-
-        return onboarding
+            registerToken: options.registerToken,
+            onStepChanged: (onboarding, step) => @handleStepChanged(onboarding, step),
+            onStepFailed: (step, err) => @handleStepFailed(step, err),
+            onDone: () => @handleTriggerDone()
 
 
     # Handler for register route, display onboarding's current step
@@ -128,16 +128,16 @@ class App extends Application
 
 
     # Load the view for the given step
-    showStep: (step, err=null) =>
+    showStep: (onboarding, step, err=null) =>
         StepView = require "./views/#{step.view}"
-        nextStep = @onboarding.getNextStep step
+        nextStep = onboarding.getNextStep step
         next = nextStep?.route or @endingRedirection
 
         stepView = new StepView
             model: new StepModel step: step, next: next
             error: err
             progression: new ProgressionModel \
-                @onboarding.getProgression step
+                onboarding.getProgression step
 
         if step.name is @accountsStepName
             stepView.on 'browse:myaccounts', @handleBrowseMyAccounts

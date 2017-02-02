@@ -1,3 +1,4 @@
+COZY_URL = 'http://cozy.local:8080';
 
 # Local class Step
 class Step
@@ -9,7 +10,10 @@ class Step
     # @param step : config step, i.e. plain object containing custom properties
     #   and methods.
     constructor: (options={}) ->
-        {step, instance} = options
+        { step,
+          onCompleted,
+          onFailed
+        } = options
 
         [
           'name',
@@ -25,6 +29,10 @@ class Step
         ].forEach (property) =>
             if step[property]?
                 @[property] = step[property]
+
+        @onCompleted onCompleted
+        @onFailed onFailed
+
 
     # Returns data related to step.
     # This is a default method that may be overriden
@@ -109,7 +117,7 @@ class Step
                 message: validation.error,
                 errors: validation.errors
 
-        return @save cozy, data
+        return @save data
             .then @handleSubmitSuccess
 
 
@@ -124,6 +132,7 @@ class Step
     # Save data
     # By default this method returns a resolved promise, but it can overriden
     # by specifying another save method in constructor parameters
+    # @url Base url of the endpoint. Most of the time, COZY_URL
     # @param data : JS object containing data to save
     save: (cozy, data={}) ->
         return Promise.resolve(data)
@@ -164,42 +173,73 @@ class Step
 module.exports = class Onboarding
 
 
-    constructor: (options={}) ->
-        @initialize options
-
-
     initialize: (options={}) ->
-        {steps, registerToken} = options
+        { steps,
+          registerToken,
+          onStepChanged,
+          onStepFailed,
+          onDone } = options
 
         throw new Error 'Missing mandatory `steps` parameter' unless steps
         throw new Error '`steps` parameter is empty' unless steps.length
 
-        # Todo : fetch from stack
-        instance = {}
+        @registerToken = registerToken
+
+        @onStepChanged onStepChanged
+        @onStepFailed onStepFailed
+        @onDone onDone
+
+        @steps = steps.map (step) =>
+            return new Step \
+                step: step,
+                onboarding: @,
+                onCompleted: @handleStepCompleted,
+                onFailed: @handleStepError
+
+        return @fetchInstance()
+            .then @handleFetchInstanceSuccess, @handleFetchInstanceError
+
+
+    # Fetch instance data from cozy-stack
+    # @return a Promise
+    fetchInstance: ->
+        url = new URL "#{COZY_URL}/settings/instance"
+        url.searchParams.append 'registerToken', @registerToken if @registerToken
+
+        headers = new Headers()
+        headers.append 'Accept', 'application/vnd.api+json'
+
+        return fetch url, { headers: headers, credentials: 'include' }
+
+
+    handleFetchInstanceSuccess: (response) =>
+        if not response.ok
+            e = new Error 'onboarding fetch instance error'
+            e.name = response.statusText
+            throw e
+
+        return response.json().then (jsonResponse) =>
+            instance = jsonResponse.data
+            @instance = instance
+            @activeSteps = @steps.filter (step) ->
+                return step.isActive instance
+            return @
+
+
+    handleFetchInstanceError: (error) ->
+        # TODO: Handle error properly
+        console.error error
+
+
+    # Star the onboarding, determines to current step and goes to it.
+    start: ->
         onboardedSteps = []
-
-        @steps = steps
-            .reduce (activeSteps, step) =>
-                stepModel = new Step step, instance
-                if stepModel.isActive instance
-                    activeSteps.push stepModel
-                    stepModel.onCompleted @handleStepCompleted
-                    stepModel.onFailed @handleStepError
-                return activeSteps
-            , []
-
-        @currentStep = @steps?.find (step) ->
+        @currentStep = @activeSteps?.find (step) ->
             return not (step.name in onboardedSteps)
 
-        @currentStep ?= @steps[0]
+        @currentStep ?= @activeSteps[0]
 
-
-    # Map some instance properties to current step object
-    # @param instance : JS object representing the instance.
-    # This method can be overriden by passing another fetchInstance function
-    # in constructor parameters
-    fetchInstance: (instance) ->
-        @publicName = instance.public_name
+        @goToStep @currentStep
 
 
     # Records handler for 'stepChanged' pseudo-event, triggered when
@@ -232,7 +272,7 @@ module.exports = class Onboarding
 
     # Go to the next step in the list.
     goToNext: () ->
-        currentIndex = @steps.indexOf(@currentStep)
+        currentIndex = @activeSteps.indexOf(@currentStep)
 
         if @currentStep? and currentIndex is -1
             throw Error 'Current step cannot be found in steps list'
@@ -240,8 +280,8 @@ module.exports = class Onboarding
         # handle magically the case not @currentStep and currentIndex is -1.
         nextIndex = currentIndex+1
 
-        if @steps[nextIndex]
-            @goToStep @steps[nextIndex]
+        if @activeSteps[nextIndex]
+            @goToStep @activeSteps[nextIndex]
         else
             @triggerDone()
 
@@ -256,8 +296,8 @@ module.exports = class Onboarding
     # Trigger a 'StepChanged' pseudo-event.
     triggerStepChanged: (step) =>
         if @stepChangedHandlers
-            @stepChangedHandlers.forEach (handler) ->
-                handler step
+            @stepChangedHandlers.forEach (handler) =>
+                handler @, step
 
 
     handleStepError: (step, err) =>
@@ -282,7 +322,7 @@ module.exports = class Onboarding
 
     # Returns an internal step by its name.
     getStepByName: (stepName) ->
-        return @steps.find (step) ->
+        return @activeSteps.find (step) ->
             return step.name is stepName
 
 
@@ -292,9 +332,9 @@ module.exports = class Onboarding
     # does not exist in the onboarding.
     getProgression: (step) ->
         return \
-            current: @steps.indexOf(step)+1,
-            total: @steps.length,
-            labels: @steps.map (step) -> step.name
+            current: @activeSteps.indexOf(step)+1,
+            total: @activeSteps.length,
+            labels: @activeSteps.map (step) -> step.name
 
 
     # Returns next step for the given step. Useful for knowing wich route to
@@ -303,17 +343,17 @@ module.exports = class Onboarding
         if not step
             throw new Error 'Mandatory parameter step is missing'
 
-        stepIndex = @steps.indexOf step
+        stepIndex = @activeSteps.indexOf step
 
         if stepIndex is -1
             throw new Error 'Given step missing in onboarding step list'
 
         nextStepIndex = stepIndex+1
 
-        if nextStepIndex is @steps.length
+        if nextStepIndex is @activeSteps.length
             return null
 
-        return @steps[nextStepIndex]
+        return @activeSteps[nextStepIndex]
 
 
     getCurrentStep: () =>
