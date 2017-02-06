@@ -11,6 +11,7 @@ class Step
     #   and methods.
     constructor: (options={}) ->
         { step,
+          onboarding,
           onCompleted,
           onFailed
         } = options
@@ -29,6 +30,8 @@ class Step
         ].forEach (property) =>
             if step[property]?
                 @[property] = step[property]
+
+        @onboarding = onboarding
 
         @onCompleted onCompleted
         @onFailed onFailed
@@ -135,7 +138,7 @@ class Step
     # by specifying another save method in constructor parameters
     # @url Base url of the endpoint. Most of the time, COZY_URL
     # @param data : JS object containing data to save
-    save: (cozy, data={}) ->
+    save: (data={}) ->
         return Promise.resolve(data)
 
     # Success handler for save() call
@@ -148,7 +151,7 @@ class Step
             return response.json().then (json) =>
                 throw message: 'validation error', errors: json.errors
 
-        return response
+        return response.data
 
 
     _joinValues: (objectData, separator) =>
@@ -230,6 +233,18 @@ module.exports = class Onboarding
     handleFetchInstanceError: (error) ->
         # TODO: Handle error properly
         console.error error
+
+
+    savePassphrase: (passphrase) ->
+        headers = new Headers()
+        headers.append 'Content-type', 'application/json'
+        return fetch "#{COZY_URL}/settings/passphrase",
+            headers: headers,
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify \
+                  passphrase: passphrase,
+                  register_token: @registerToken
 
 
     # Star the onboarding, determines to current step and goes to it.

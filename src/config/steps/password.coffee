@@ -1,4 +1,3 @@
-jQuery = require 'jquery'
 passwordHelper = require '../../lib/password_helper'
 
 module.exports = {
@@ -23,9 +22,6 @@ module.exports = {
         return validation
 
     save: (data) ->
-        return fetch '/register/password',
-            method: 'POST',
-            credentials: 'include',
-            body: JSON.stringify data
-        .then @handleSaveSuccess, @handleServerError
+        return @onboarding.savePassphrase data.password
+            .then @handleSaveSuccess, @handleServerError
 }
