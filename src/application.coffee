@@ -142,7 +142,9 @@ class App extends Application
         if step.name is @accountsStepName
             stepView.on 'browse:myaccounts', @handleBrowseMyAccounts
 
-        if step.name is @agreementStepName and ENV.HIDE_STATS_AGREEMENT
+        # Make this code better, maybe internalize into stepModel a way of
+        # retrieving data related to the step.
+        if step.name is @agreementStepName and onboarding.isStatsAgreementHidden()
             stepView.disableStatsAgreement()
 
         @layout.showChildView 'content', stepView

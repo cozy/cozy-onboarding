@@ -69,10 +69,10 @@ class Step
 
     # Trigger 'completed' pseudo-event
     # returnValue is from configStep.submit
-    triggerCompleted: () ->
+    triggerCompleted: (data) ->
         if @completedHandlers
             @completedHandlers.forEach (handler) =>
-                handler(@)
+                handler(@, data)
 
 
     triggerFailed: (error) ->
@@ -126,7 +126,8 @@ class Step
         @triggerFailed error
 
     # Handler for submit success
-    handleSubmitSuccess: => @triggerCompleted()
+    handleSubmitSuccess: (data) =>
+      @triggerCompleted data
 
 
     # Save data
@@ -266,7 +267,8 @@ module.exports = class Onboarding
     # when it has been successfully submitted
     # Maybe validation should be called here
     # Maybe we will return a Promise or call some callbacks in the future.
-    handleStepCompleted: =>
+    handleStepCompleted: (step, data) =>
+        @instance = Object.assign {}, @instance, data
         @goToNext()
 
 
@@ -358,6 +360,9 @@ module.exports = class Onboarding
 
     getCurrentStep: () =>
         return @currentStep
+
+
+    isStatsAgreementHidden: -> false
 
 
 # Step is exposed for test purposes only
