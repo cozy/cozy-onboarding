@@ -14,7 +14,6 @@ isValidTimezone = (timezone) ->
 
 module.exports = {
     name: 'infos',
-    route: 'register/infos',
     view : 'steps/infos',
     isActive: (instance) ->
         validation = @validate instance.attributes

@@ -1,6 +1,5 @@
 module.exports = {
     name: 'confirmation',
-    route: 'register/confirmation',
     view : 'steps/confirmation'
     save: (data) ->
         data.onboardedSteps = [

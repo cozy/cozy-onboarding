@@ -23,53 +23,21 @@ class App extends Application
     Sets application
 
     We instanciate root application components
-    - router: we pass the app reference to it to easily get it without requiring
-              application module later.
     - layout: the application layout view, rendered.
     ###
     initialize: ->
         AppStyles = require './styles/app.styl'
 
         @on 'start', (options)=>
-            @initializeRouter registerToken: options.registerToken
             @layout = new AppLayout()
             @layout.render()
 
             # Use pushState because URIs do *not* rely on fragment (see
             # `server/controllers/routes.coffee` file)
-            Backbone.history.start pushState: true if Backbone.history
+            Backbone.history.start pushState: false if Backbone.history
             Object.freeze @ if typeof Object.freeze is 'function'
 
-
-    # Initialize routes relative to onboarding step.
-    # The idea is to configure the router externally as a "native"
-    # Backbone Router
-    initializeRouter: (options) =>
-        @router = new Backbone.Router()
-
-        @router.route \
-            '',
-            'default',
-            => @handleDefaultRoute registerToken: options.registerToken
-
-        # if onboarding, the pathname will be '/register*'
-        @router.route \
-            'register(/:step)',
-            'register',
-            @handleRegisterRoute
-
-        @router.route \
-            'login(?next=*path)',
-            'login',
-            @handleLogin
-        @router.route \
-            'login(/*path)',
-            'login',
-            @handleLogin
-        @router.route \
-            'password/reset/:key',
-            'resetPassword',
-            @handleResetPassword
+            @handleDefaultRoute registerToken: options.registerToken
 
 
     # Handle default route
@@ -113,18 +81,6 @@ class App extends Application
             onStepChanged: (onboarding, step) => @handleStepChanged(onboarding, step),
             onStepFailed: (step, err) => @handleStepFailed(step, err),
             onDone: () => @handleTriggerDone()
-
-
-    # Handler for register route, display onboarding's current step
-    handleRegisterRoute: =>
-        @onboarding ?= @initializeOnboarding()
-
-        # Load onboarding stylesheet
-        AppStyles = require './styles/app.styl'
-
-        currentStep = @onboarding.getCurrentStep()
-        @router.navigate currentStep.route
-        @onboarding.goToStep(currentStep)
 
 
     # Load the view for the given step

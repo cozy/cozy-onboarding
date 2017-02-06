@@ -2,7 +2,6 @@ passwordHelper = require '../../lib/password_helper'
 
 module.exports = {
     name: 'password',
-    route: 'register/password',
     view : 'steps/password'
 
     # Return validation object
