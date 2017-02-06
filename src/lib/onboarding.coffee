@@ -51,7 +51,7 @@ class Step
         return @error
 
 
-    fetchData: () ->
+    fetchData: (instance) ->
         return Promise.resolve(@)
 
 
@@ -235,6 +235,24 @@ module.exports = class Onboarding
         console.error error
 
 
+    updateInstance: (data) ->
+        Object.assign @instance.attributes, data
+
+        headers = new Headers()
+        headers.append 'Host', 'alice.example.com'
+        headers.append 'Accept', 'application/vnd.api+json'
+        headers.append 'Content-type', 'application/vnd.api+json'
+        # headers.append 'Cookie', 'sessionid=xxxxx'
+        headers.append 'Authorization', 'Bearer settings-token'
+
+        return fetch "#{COZY_URL}/settings/instance",
+            method: 'PUT',
+            headers: headers,
+            # Authentify
+            credentials: 'include',
+            body: JSON.stringify data: @instance
+
+
     savePassphrase: (passphrase) ->
         headers = new Headers()
         headers.append 'Content-type', 'application/json'
@@ -306,7 +324,7 @@ module.exports = class Onboarding
     # Go directly to a given step.
     goToStep: (step) ->
         @currentStep = step
-        step.fetchData()
+        step.fetchData(@instance)
             .then @triggerStepChanged, @triggerStepErrors
 
 

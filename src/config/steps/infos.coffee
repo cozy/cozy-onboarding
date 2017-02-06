@@ -17,7 +17,8 @@ module.exports = {
     route: 'register/infos',
     view : 'steps/infos',
     isActive: (instance) ->
-        return not instance?.hasValidInfos
+        validation = @validate instance.attributes
+        return not validation.success
 
 
     getData: () ->
@@ -27,20 +28,14 @@ module.exports = {
             timezone: @timezone
 
 
-    fetchData: () ->
-        return fetch '/settings/instance',
-            method: 'GET',
-            credentials: 'include',
-        .then (response) =>
-            if response.ok
-                return response.json().then (json) =>
-                    @publicName = json.public_name
-                    @email = json.email
-                    @timezone = json.timezone
-                    return @
-            else
-                @error = 'step infos fetch data error'
-                return @
+    fetchData: (instance) ->
+        return Promise.resolve @ unless instance.attributes
+
+        @publicName = instance.attributes.public_name
+        @email = instance.attributes.email
+        @timezone = instance.attributes.timezone
+
+        return Promise.resolve @
 
 
     # @see Onboarding.validate
@@ -48,8 +43,8 @@ module.exports = {
         validation = success: false, errors: []
 
         ['public_name', 'email', 'timezone'].forEach (field) ->
-            if not(typeof data[field] is 'undefined') \
-                    and data[field].trim().length is 0
+            if typeof data[field] is 'undefined' \
+                    or data[field].trim().length is 0
                 validation.errors[field] = "missing #{field}"
 
         if data.email and not isValidEmail(data.email)
@@ -70,10 +65,7 @@ module.exports = {
             'password',
             'infos'
         ]
-        return fetch '/register',
-            method: 'PUT',
-            # Authentify
-            credentials: 'include',
-            body: JSON.stringify data
-        .then @handleSaveSuccess, @handleServerError
+
+        return @onboarding.updateInstance data
+            .then @handleSaveSuccess, @handleServerError
 }
