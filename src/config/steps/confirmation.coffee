@@ -3,7 +3,7 @@ module.exports = {
     route: 'register/confirmation',
     view : 'steps/confirmation'
     save: (data) ->
-        onboardedSteps = [
+        data.onboardedSteps = [
             'welcome',
             'agreement',
             'password',
@@ -11,10 +11,7 @@ module.exports = {
             'accounts',
             'confirmation'
         ]
-        return fetch '/register',
-            method: 'PUT',
-            # Authentify
-            credentials: 'include',
-            body: JSON.stringify {onboardedSteps: onboardedSteps}
-        .then @handleSaveSuccess, @handleServerError
+
+        return @onboarding.updateInstance data
+            .then @handleSaveSuccess, @handleServerError
 }
