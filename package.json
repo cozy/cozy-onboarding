@@ -13,7 +13,7 @@
     "pretest": "npm run lint",
     "prewatch": "npm run clean",
     "lint": "standard 'src/**/*.js' 'src/**/*.jsx'",
-    "test": "node --harmony_proxies node_modules/.bin/jest",
+    "test": "mocha test/**/* --bail --reporter spec --compilers coffee:coffee-script/register --colors",
     "watch": "NODE_ENV=development webpack --config webpack.config.js --watch --display-modules --display-chunks",
     "watch:server": "NODE_ENV=development webpack-dev-server --config webpack.config.js --port 8082 --display-modules --display-chunks --inline --hot"
   },
@@ -73,10 +73,13 @@
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.12.3",
     "cozy-ui": "3.0.0-beta1",
+    "fetch-mock": "^5.9.3",
     "jade": "^1.11.0",
     "jade-loader": "^0.8.0",
     "jquery": "^3.1.1",
+    "jsdom-global": "^2.1.1",
     "marionette": "^0.0.0",
+    "mocha": "^3.2.0",
     "node-polyglot": "^2.2.0",
     "underscore": "^1.8.3"
   },

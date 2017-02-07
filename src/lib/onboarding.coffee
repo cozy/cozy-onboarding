@@ -33,8 +33,8 @@ class Step
 
         @onboarding = onboarding
 
-        @onCompleted onCompleted
-        @onFailed onFailed
+        onCompleted and @onCompleted onCompleted
+        onFailed and @onFailed onFailed
 
 
     # Returns data related to step.
@@ -189,9 +189,9 @@ module.exports = class Onboarding
 
         @registerToken = registerToken
 
-        @onStepChanged onStepChanged
-        @onStepFailed onStepFailed
-        @onDone onDone
+        onStepChanged and @onStepChanged onStepChanged
+        onStepFailed and @onStepFailed onStepFailed
+        onDone and @onDone onDone
 
         @steps = steps.map (step) =>
             return new Step \
@@ -267,9 +267,9 @@ module.exports = class Onboarding
 
     # Star the onboarding, determines to current step and goes to it.
     start: ->
-        onboardedSteps = []
-        @currentStep = @activeSteps?.find (step) ->
-            return not (step.name in onboardedSteps)
+        @instance.attributes.onboardedSteps ?= []
+        @currentStep = @activeSteps?.find (step) =>
+            return not (step.name in @instance.attributes.onboardedSteps)
 
         @currentStep ?= @activeSteps[0]
 
