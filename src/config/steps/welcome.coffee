@@ -2,6 +2,6 @@ module.exports = {
     name: 'welcome',
     view: 'steps/welcome',
 
-    isDone: ({contextToken}) ->
-        return !!contextToken
+    isDone: ({instance, contextToken}) ->
+        return (@name in instance.attributes.onboardedSteps) or !!contextToken
 }

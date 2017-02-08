@@ -57,14 +57,4 @@ module.exports = {
         return validation
 
 
-    save: (data) ->
-        data.onboardedSteps = [
-            'welcome',
-            'agreement',
-            'password',
-            'infos'
-        ]
-
-        return @onboarding.updateInstance data
-            .then @handleSaveSuccess, @handleServerError
 }

@@ -157,7 +157,8 @@ class Step
     # by specifying another save method in constructor parameters
     # @param data : JS object containing data to save
     save: (data={}) ->
-        return Promise.resolve(data)
+        return @onboarding.updateInstance @name, data
+            .then @handleSaveSuccess, @handleServerError
 
     # Success handler for save() call
     handleSaveSuccess: (instance) =>
@@ -215,12 +216,18 @@ module.exports = class Onboarding
                 onFailed: @handleStepError
 
         return @fetchInstance()
-            .then @handleFetchInstanceSuccess, @handleFetchInstanceError
+            .then (instance) =>
+                @getActiveSteps(instance)
+            .then () =>
+                return @
 
 
     # Fetch instance data from cozy-stack
     # @return a Promise
     fetchInstance: ->
+        @instance = @fetchInstanceLocally()
+        return Promise.resolve @instance unless !@instance
+
         url = new URL "#{window.location.protocol}//#{@domain}/settings/instance"
 
         if not(@contextToken) and @registerToken
@@ -233,6 +240,7 @@ module.exports = class Onboarding
             headers.append 'Authorization', "Bearer #{@contextToken}"
 
         return fetch url, { headers: headers, credentials: 'include' }
+            .then @handleFetchInstanceSuccess, @handleFetchInstanceError
 
 
     handleFetchInstanceSuccess: (response) =>
@@ -244,9 +252,7 @@ module.exports = class Onboarding
         return response.json().then (jsonResponse) =>
             instance = jsonResponse.data
             @instance = instance
-            @activeSteps = @steps.filter (step) ->
-                return step.isActive instance
-            return @
+            return @instance
 
 
     handleFetchInstanceError: (error) ->
@@ -254,28 +260,62 @@ module.exports = class Onboarding
         console.error error
 
 
-    updateInstance: (data) ->
+    getActiveSteps: (instance) ->
+        @activeSteps = @steps.filter (step) ->
+            return step.isActive instance
+
+
+    fetchInstanceLocally: ->
+        instance
+        try
+            instance = JSON.parse window.localStorage.getItem 'instance'
+        catch e
+            instance = null
+        console.debug instance
+        return instance
+
+
+    saveInstanceLocally: (instance) ->
+        console.debug instance
+        window.localStorage.setItem 'instance', JSON.stringify instance
+
+
+    removeLocalData: ->
+        window.localStorage.removeItem 'instance'
+
+
+    updateInstance: (stepName, data) ->
         Object.assign @instance.attributes, data
+        @instance.attributes.onboardedSteps ?= []
+        @instance.attributes.onboardedSteps.push stepName
 
-        headers = new Headers()
-        headers.append 'Host', 'alice.example.com'
-        headers.append 'Accept', 'application/vnd.api+json'
-        headers.append 'Content-type', 'application/vnd.api+json'
-        # headers.append 'Cookie', 'sessionid=xxxxx'
-        headers.append 'Authorization', "Bearer #{@contextToken}"
+        authorizedToSave = !!@contextToken
 
-        return fetch "#{window.location.protocol}//#{@domain}/settings/instance",
-            method: 'PUT',
-            headers: headers,
-            # Authentify
-            credentials: 'include',
-            body: JSON.stringify data: @instance
-        .then (response) =>
-            if response.ok and response.status is 200
-                return response.json().then (responseJson) =>
-                    @instance = responseJson.data
-                    return @instance
-            else throw new 'Update instance error'
+        @saveInstanceLocally @instance
+
+        if authorizedToSave
+            headers = new Headers()
+            headers.append 'Host', 'alice.example.com'
+            headers.append 'Accept', 'application/vnd.api+json'
+            headers.append 'Content-type', 'application/vnd.api+json'
+            # headers.append 'Cookie', 'sessionid=xxxxx'
+            headers.append 'Authorization', "Bearer #{@contextToken}"
+
+            return fetch "#{window.location.protocol}//#{@domain}/settings/instance",
+                method: 'PUT',
+                headers: headers,
+                # Authentify
+                credentials: 'include',
+                body: JSON.stringify data: @instance
+            .then (response) =>
+                if response.ok and response.status is 200
+                    return response.json().then (responseJson) =>
+                        @instance = responseJson.data
+                        @removeLocalData()
+                        return @instance
+                else throw new 'Update instance error'
+        else
+            return Promise.resolve(@instance)
 
 
     savePassphrase: (passphrase) ->

@@ -4,8 +4,8 @@ module.exports = {
     name: 'password',
     view : 'steps/password'
 
-    isDone: ({contextToken}) ->
-        return contextToken?
+    isDone: ({instance, contextToken}) ->
+        return (@name in instance.attributes.onboardedSteps) or !!contextToken
 
     # Return validation object
     # @see Onboarding.validate
@@ -24,7 +24,9 @@ module.exports = {
         return validation
 
     save: (data) ->
-        return @onboarding.savePassphrase data.password
+        return @onboarding.updateInstance(@name)
+            .then () =>
+                return @onboarding.savePassphrase data.password
             .then @handleSaveSuccess, @handleServerError
 
     needReloadAfterComplete: true
