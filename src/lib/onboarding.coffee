@@ -1,5 +1,3 @@
-COZY_URL = 'http://cozy.local:8080';
-
 # Local class Step
 class Step
 
@@ -179,7 +177,9 @@ module.exports = class Onboarding
 
     initialize: (options={}) ->
         { steps,
+          domain,
           registerToken,
+          contextToken,
           onStepChanged,
           onStepFailed,
           onDone } = options
@@ -187,6 +187,8 @@ module.exports = class Onboarding
         throw new Error 'Missing mandatory `steps` parameter' unless steps
         throw new Error '`steps` parameter is empty' unless steps.length
 
+        @domain = domain
+        @contextToken = contextToken
         @registerToken = registerToken
 
         onStepChanged and @onStepChanged onStepChanged
@@ -207,11 +209,16 @@ module.exports = class Onboarding
     # Fetch instance data from cozy-stack
     # @return a Promise
     fetchInstance: ->
-        url = new URL "#{COZY_URL}/settings/instance"
-        url.searchParams.append 'registerToken', @registerToken if @registerToken
+        url = new URL "#{window.location.protocol}#{@domain}/settings/instance"
+
+        if not(@contextToken) and @registerToken
+          url.searchParams.append 'registerToken', @registerToken if @registerToken
 
         headers = new Headers()
         headers.append 'Accept', 'application/vnd.api+json'
+
+        if @contextToken
+            headers.append 'Authorization', "Bearer #{@contextToken}"
 
         return fetch url, { headers: headers, credentials: 'include' }
 

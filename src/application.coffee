@@ -47,6 +47,11 @@ class App extends Application
     initialize: ->
         AppStyles = require './styles/app.styl'
 
+        applicationElement = document.querySelector '[role=application]'
+
+        @contextToken = applicationElement.dataset.token
+        @domain = applicationElement.dataset.cozyStack
+
         @on 'start', (options)=>
             @layout = new AppLayout()
             @layout.render()
@@ -105,6 +110,8 @@ class App extends Application
 
         return onboarding.initialize \
             steps: steps,
+            domain: @domain,
+            contextToken: @contextToken,
             registerToken: options.registerToken,
             onStepChanged: (onboarding, step) => @handleStepChanged(onboarding, step),
             onStepFailed: (step, err) => @handleStepFailed(step, err),
