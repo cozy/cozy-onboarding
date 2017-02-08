@@ -18,5 +18,12 @@
       "type": "io.cozy.instances",
       "verbs": ["GET", "POST", "PUT"]
     }
+  },
+  "routes": {
+    "/": {
+      "folder": "/",
+      "index": "index.html",
+      "public": true
+    }
   }
 }
