@@ -160,16 +160,8 @@ class Step
         return Promise.resolve(data)
 
     # Success handler for save() call
-    handleSaveSuccess: (response) =>
-        # Success ? Hell no we still have to check the status !
-        if not response.ok
-            return @handleServerError response unless response.status is 400
-
-            # Validation error
-            return response.json().then (json) =>
-                throw message: 'validation error', errors: json.errors
-
-        return response.data
+    handleSaveSuccess: (instance) =>
+        return instance
 
 
     _joinValues: (objectData, separator) =>
@@ -270,7 +262,7 @@ module.exports = class Onboarding
         headers.append 'Accept', 'application/vnd.api+json'
         headers.append 'Content-type', 'application/vnd.api+json'
         # headers.append 'Cookie', 'sessionid=xxxxx'
-        headers.append 'Authorization', 'Bearer settings-token'
+        headers.append 'Authorization', "Bearer #{@contextToken}"
 
         return fetch "#{window.location.protocol}//#{@domain}/settings/instance",
             method: 'PUT',
@@ -278,6 +270,12 @@ module.exports = class Onboarding
             # Authentify
             credentials: 'include',
             body: JSON.stringify data: @instance
+        .then (response) =>
+            if response.ok and response.status is 200
+                return response.json().then (responseJson) =>
+                    @instance = responseJson.data
+                    return @instance
+            else throw new 'Update instance error'
 
 
     savePassphrase: (passphrase) ->
