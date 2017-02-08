@@ -16,7 +16,7 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.json', '.coffee', '.jade']
   },
-  devtool: build ? '#cheap-module-source-map' : 'eval',
+  devtool: '#cheap-module-source-map',
   module: {
     loaders: [
       {
