@@ -6,12 +6,12 @@ const build = process.env.NODE_ENV === 'production'
 
 module.exports = {
   resolve: {
-    extensions: ['.styl']
+    extensions: ['.css', '.styl']
   },
   module: {
     loaders: [
       {
-        test: /\.styl$/,
+        test: [/\.styl$/, /\.css$/],
         loader: ExtractTextPlugin.extract('style', [
           'css?importLoaders=1',
           'postcss',

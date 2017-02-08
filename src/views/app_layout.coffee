@@ -6,7 +6,6 @@ main region for its subviews.
 ###
 
 # Normalize styles
-require 'normalize.css/normalize.css'
 
 
 {LayoutView} = require 'backbone.marionette'
