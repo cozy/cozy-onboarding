@@ -81,8 +81,8 @@ class App extends Application
               app = apps.find (app) =>
                 return app.id is @targetApplication
 
-              if app and app.links and app.links.self
-                  window.location.replace app.links.self
+              if app and app.links and app.links.target
+                  window.location.replace app.links.target
               else
                   console.error 'No target Application has been found'
 
