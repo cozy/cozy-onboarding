@@ -1,9 +1,9 @@
 {
   "name": "Onboarding",
-  "slug": "cozy-register",
+  "slug": "onboarding",
   "icon": "icon.svg",
   "description": "Register application for Cozy v3",
-  "source": "http://github.com/cozy/cozy-register",
+  "source": "http://github.com/cozy/cozy-onboarding-v3",
   "developer": {
     "name": "Cozy",
     "url": "https://cozy.io"
@@ -13,10 +13,15 @@
   "version": "3.0.0",
   "licence": "AGPL-3.0",
   "permissions": {
-    "instance": {
+    "settings": {
       "description": "Required to register user",
-      "type": "io.cozy.instances",
+      "type": "io.cozy.settings",
       "verbs": ["GET", "POST", "PUT"]
+    },
+    "applications": {
+      "description": "Required to redirect to your default app",
+      "type": "io.cozy.applications",
+      "verbs": ["GET"]
     }
   },
   "routes": {
