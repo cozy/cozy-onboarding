@@ -4,6 +4,9 @@ module.exports = {
     name: 'password',
     view : 'steps/password'
 
+    isDone: ({contextToken}) ->
+        return contextToken?
+
     # Return validation object
     # @see Onboarding.validate
     validate: (data={}) ->

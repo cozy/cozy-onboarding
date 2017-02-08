@@ -19,6 +19,7 @@ class Step
           'route',
           'view',
           'isActive',
+          'isDone',
           'fetchInstance',
           'fetchData',
           'getData',
@@ -100,6 +101,15 @@ class Step
     #  but should be in overriding ones.
     isActive: (instance) ->
         return true
+
+
+    # Determines whether or not the step seems completed, based only on
+    # given informations like instance data, presence of registerToken, presence
+    # of contextToken
+    # Default condition: we look into instance.attributes.onboardedSteps
+    isDone: ({instance, registerToken, contextToken}) ->
+        instance.attributes?.onboardedSteps ?= []
+        return @name in instance.attributes.onboardedSteps
 
 
     # Validate data related to step
@@ -286,9 +296,12 @@ module.exports = class Onboarding
     start: ->
         @instance.attributes.onboardedSteps ?= []
         @currentStep = @activeSteps?.find (step) =>
-            return not (step.name in @instance.attributes.onboardedSteps)
+            return not step.isDone \
+                instance: @instance,
+                registerToken: @registerToken,
+                contextToken: @contextToken
 
-        @currentStep ?= @activeSteps[0]
+        return @triggerDone() unless @currentStep
 
         @goToStep @currentStep
 
