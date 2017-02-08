@@ -22,6 +22,7 @@ class Step
           'fetchInstance',
           'fetchData',
           'getData',
+          'needReloadAfterComplete',
           'validate',
           'save',
           'error'
@@ -71,6 +72,16 @@ class Step
     # Trigger 'completed' pseudo-event
     # returnValue is from configStep.submit
     triggerCompleted: (data) ->
+        if @needReloadAfterComplete
+            if window \
+                and window.location \
+                    and typeof window.location.reload is 'function'
+                        window.location.reload()
+            else
+                throw new Error 'Cannot reload window'
+
+            return
+
         if @completedHandlers
             @completedHandlers.forEach (handler) =>
                 handler(@, data)
@@ -209,7 +220,7 @@ module.exports = class Onboarding
     # Fetch instance data from cozy-stack
     # @return a Promise
     fetchInstance: ->
-        url = new URL "#{window.location.protocol}#{@domain}/settings/instance"
+        url = new URL "#{window.location.protocol}//#{@domain}/settings/instance"
 
         if not(@contextToken) and @registerToken
           url.searchParams.append 'registerToken', @registerToken if @registerToken
@@ -252,7 +263,7 @@ module.exports = class Onboarding
         # headers.append 'Cookie', 'sessionid=xxxxx'
         headers.append 'Authorization', 'Bearer settings-token'
 
-        return fetch "#{COZY_URL}/settings/instance",
+        return fetch "#{window.location.protocol}//#{@domain}/settings/instance",
             method: 'PUT',
             headers: headers,
             # Authentify
@@ -263,7 +274,7 @@ module.exports = class Onboarding
     savePassphrase: (passphrase) ->
         headers = new Headers()
         headers.append 'Content-type', 'application/json'
-        return fetch "#{COZY_URL}/settings/passphrase",
+        return fetch "#{window.location.protocol}//#{@domain}/settings/passphrase",
             headers: headers,
             method: 'POST',
             credentials: 'include',

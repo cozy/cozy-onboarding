@@ -23,4 +23,6 @@ module.exports = {
     save: (data) ->
         return @onboarding.savePassphrase data.password
             .then @handleSaveSuccess, @handleServerError
+
+    needReloadAfterComplete: true
 }
