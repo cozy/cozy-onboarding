@@ -31,6 +31,7 @@ module.exports = class InfosView extends StepView
 
     # Step may contain errors, for example when data fetching has failed.
     onRender: ->
+        super()
         # We store inputs in an array with identifier, mainly because it is
         # useful for error management
         @$inputs ?= @fields.reduce (inputs, field) =>
