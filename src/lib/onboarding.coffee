@@ -145,7 +145,6 @@ class Step
     # Save data
     # By default this method returns a resolved promise, but it can overriden
     # by specifying another save method in constructor parameters
-    # @url Base url of the endpoint. Most of the time, COZY_URL
     # @param data : JS object containing data to save
     save: (data={}) ->
         return Promise.resolve(data)
