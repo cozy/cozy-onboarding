@@ -11,7 +11,7 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: [/\.styl$/, /\.css$/],
+        test: /\.(styl|css)$/,
         loader: ExtractTextPlugin.extract('style', [
           'css?importLoaders=1',
           'postcss',
