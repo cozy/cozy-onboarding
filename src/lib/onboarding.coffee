@@ -298,7 +298,6 @@ module.exports = class Onboarding
             headers.append 'Host', 'alice.example.com'
             headers.append 'Accept', 'application/vnd.api+json'
             headers.append 'Content-type', 'application/vnd.api+json'
-            # headers.append 'Cookie', 'sessionid=xxxxx'
             headers.append 'Authorization', "Bearer #{@contextToken}"
 
             return fetch "#{window.location.protocol}//#{@domain}/settings/instance",
