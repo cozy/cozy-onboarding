@@ -81,7 +81,8 @@ class App extends Application
     # Internal handler called when the onboarding is finished
     # Redirect to given app
     handleTriggerDone: () ->
-        fetchApps('http://cozy.local:8080')
+        url = "#{window.location.protocol}//#{@domain}"
+        fetchApps(url)
           .then (apps) =>
               app = apps.find (app) =>
                 return app.id is @targetApplication
