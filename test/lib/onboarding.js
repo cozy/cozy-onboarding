@@ -193,8 +193,8 @@ describe('Onboarding', () => {
     })
   })
 
-  describe('#handleFetchInstanceSuccess', () => {
-    it('should not map inactive steps', (done) => {
+  describe('#getActiveSteps', () => {
+    it('should not map inactive steps', () => {
       // arrange
       const onboarding = new Onboarding()
 
@@ -214,25 +214,18 @@ describe('Onboarding', () => {
           }
         })]
 
-      const response = {
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({})
-      }
+      const instance = {}
 
       // act
-      onboarding.handleFetchInstanceSuccess(response)
+      onboarding.getActiveSteps(instance)
 
       // assert
-      setTimeout(() => {
-        assert.equal(1, onboarding.activeSteps.length)
-        let step1 = onboarding.activeSteps[0]
-        assert('Step', step1.constructor.name)
-        assert.equal('test', step1.name)
-        assert.equal('testroute', step1.route)
-        assert.equal('testview', step1.view)
-        done()
-      }, 5)
+      assert.equal(1, onboarding.activeSteps.length)
+      let step1 = onboarding.activeSteps[0]
+      assert('Step', step1.constructor.name)
+      assert.equal('test', step1.name)
+      assert.equal('testroute', step1.route)
+      assert.equal('testview', step1.view)
     })
   })
 
@@ -324,7 +317,7 @@ describe('Onboarding', () => {
       assert.equal('test', onboarding.currentStep.name)
     })
 
-    it('should set first step as current step with completed onboardedSteps', () => {
+    it('should not set current step with completed onboardedSteps', () => {
       // arrange
       const instance = {
         attributes: {
@@ -350,7 +343,7 @@ describe('Onboarding', () => {
       onboarding.start()
 
       // assert
-      assert.equal('test', onboarding.currentStep.name)
+      assert.isUndefined(onboarding.currentStep)
     })
   })
 

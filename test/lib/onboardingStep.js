@@ -285,62 +285,38 @@ describe('Onboarding.Step', () => {
   })
 
   describe('#save', () => {
-    it('should return a Promise if argument', () => {
+    it('should call onboarding updateInstance', () => {
       // arrange
-      let step = new Step({step: {}})
+      let step = new Step({step: { name: 'testStep' }})
       let data = {data: 'data'}
-      let expectedResponse = Promise.resolve(data)
+
+      step.onboarding = {
+        updateInstance: () => {}
+      }
+
+      sinon.stub(step.onboarding, 'updateInstance', (data) => Promise.resolve(data))
 
       // act
-      let response = step.save(data)
+      step.save(data)
 
       // assert
-      assert.deepEqual(response, expectedResponse)
-    })
+      assert(step.onboarding.updateInstance.withArgs(step.name, data).calledOnce)
 
-    it('should return a Promise if no argument', () => {
-      // arrange
-      let step = new Step({step: {}})
-      let expectedResponse = Promise.resolve()
-
-      // act
-      let response = step.save()
-
-      // assert
-      assert.deepEqual(response, expectedResponse)
+      delete step.onboarding
     })
   })
 
   describe('#handleSaveSuccess', () => {
-    it('should return the response data if no error', () => {
+    it('should return data if no error', () => {
       // arrange
       let step = new Step({step: {}})
       const data = {content: 'value'}
-      let responseArgument = {ok: true, status: 200, data: data}
 
       // act
-      let response = step.handleSaveSuccess(responseArgument)
+      let response = step.handleSaveSuccess(data)
 
       // assert
       assert.deepEqual(response, data)
-    })
-
-    it('should call handleServerError if response is not ok and throw an error', () => {
-      // arrange
-      let step = new Step({step: {}})
-      step.serverErrorMessage = 'server step error'
-      let responseArgument = {ok: false}
-
-      let spy = sinon.spy(step, 'handleServerError')
-      spy.withArgs(responseArgument)
-
-      let fn = () => {
-        step.handleSaveSuccess(responseArgument)
-      }
-
-      // assert
-      assert.throws(fn, 'server step error')
-      assert(spy.withArgs(responseArgument).calledOnce)
     })
   })
 

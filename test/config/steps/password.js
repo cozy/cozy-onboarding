@@ -50,16 +50,18 @@ describe('Step: password', () => {
   })
 
   describe('#save', () => {
-    it('should call onboarding.savePassphrase', () => {
+    it('should call onboarding.updateInstance', () => {
       // arrange
       const data = {
         password: 'abcde'
       }
 
       const onboarding = {
+        updateInstance: () => {},
         savePassphrase: () => {}
       }
 
+      sinon.stub(onboarding, 'updateInstance', (name, data) => Promise.resolve())
       sinon.stub(onboarding, 'savePassphrase', (passphrase) => Promise.resolve())
       PasswordConfig.onboarding = onboarding
 
@@ -67,9 +69,36 @@ describe('Step: password', () => {
       PasswordConfig.save(data)
 
       // assert
-      assert(onboarding.savePassphrase.withArgs(data.password).calledOnce)
+      assert(onboarding.updateInstance.withArgs('password').calledOnce)
 
       delete PasswordConfig.onboarding
+    })
+
+    it('should call onboarding.savePassphrase', (done) => {
+      // arrange
+      const data = {
+        password: 'abcde'
+      }
+
+      const onboarding = {
+        updateInstance: () => {},
+        savePassphrase: () => {}
+      }
+
+      sinon.stub(onboarding, 'updateInstance', (name, data) => Promise.resolve())
+      sinon.stub(onboarding, 'savePassphrase', (passphrase) => Promise.resolve())
+      PasswordConfig.onboarding = onboarding
+
+      // act
+      PasswordConfig.save(data)
+
+      // assert
+      setTimeout(() => {
+        assert(onboarding.savePassphrase.withArgs(data.password).calledOnce)
+
+        delete PasswordConfig.onboarding
+        done()
+      }, 5)
     })
   })
 })
