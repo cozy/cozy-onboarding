@@ -6,9 +6,11 @@ module.exports = class MaifView extends StepView
 
     ui:
         next: '.controls .next'
+        pass: '.controls .pass'
 
     events:
         'click @ui.next': 'onSubmit'
+        'click @ui.pass': 'onSubmit'
 
 
     onRender: (args...) ->
