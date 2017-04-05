@@ -12,6 +12,13 @@ This class has to facilitate migration to another framework in the future. At th
 ### Step objects
 Step objects are simple configuration JavaScript object declared in separated files. Their role is to describe each onboarding step, with properties, but also with methods when needed, as validation methods for example. They are located in `steps` directory.
 
+#### Context steps
+The MAIF step is a _context step_, related to instance's context. An instance may have a context attribute which is a key that can be used to activate/unactivate some steps. This solution is not the better one but we assume that we will improve it in the future. At this time it allows us to have something working.
+
+For future consideration, we may have two way to improve this mechanism:
+* Use a plugin mechanism, based also on the instance's context
+* Use a build mechanism (maybe mixed with plugins) to be able to build some dedicated version of onboarding, sharing a common base.
+
 #### Step class
 
 The class represents an onboarding step, for example the greetings step or the password definition step.
