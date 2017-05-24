@@ -1,0 +1,22 @@
+
+/**
+ * Lato
+ *
+ * Use for: labor
+ * Font-family: Lato, sans-serif
+ * Available styles:
+ * - font-style: normal / font-weight: normal
+ * - font-style: normal / font-weight: bold
+ */
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    src: url('./Lato-Regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    src: url('./Lato-Bold.woff2') format('woff2');
+}
