@@ -1,14 +1,3 @@
-**VARS TO REPLACE IN TEMPLATE:**
-
-** REMOVE THIS SECTION BEFORE PUBLISHING**
-
-- `Onboarding`: the application name
-- `<APP_PORT>`: app running port
-- `cozy-onboarding-v3`: transifex app slug
-- `cozy-onboarding-v3`: Github repository slugname
-
----
-
 [![Travis build status shield](https://img.shields.io/travis/cozy/cozy-onboarding-v3/master.svg)](https://travis-ci.org/cozy/cozy-onboarding-v3)
 [![Github Release version shield](https://img.shields.io/github/tag/cozy/cozy-onboarding-v3.svg)](https://github.com/cozy/cozy-onboarding-v3/releases)
 
