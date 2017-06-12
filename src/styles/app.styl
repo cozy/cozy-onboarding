@@ -484,14 +484,15 @@ footer
 // Services
 .services
     display flex
+    flex-wrap wrap
     justify-content center
     align-items stretch
     margin-top 1.6875em
-    margin-left -7.5em
-    margin-right -7.5em
+    margin-left -.75em
+    margin-right -.75em
 
 .service
-    flex 0 0 14em
+    flex 1 9em
     margin .75em
     border 1px solid $grey-10
     border-radius 4px
@@ -594,13 +595,16 @@ footer
 
   .modal
     margin-top    0px
-    max-width     800px
-    width         80%
-    height        80%
+    max-width     832px
+    width         100%
+    height        100%
     background    white
-    border-radius 1em
     box-shadow    0 1px 3px .7 black
     transition    margin-top .3s
+
+    @media screen and (min-width: 833px)
+        height 80%
+        border-radius 1em
 
   &[aria-hidden=true]
     background-color rgba(0,0,0,0)
@@ -612,6 +616,8 @@ footer
 // Intent iframe in a modal
 .coz-intent
   border        none
-  border-radius 1em
   width         100%
   height        100%
+
+  @media screen and (min-width: 833px)
+      border-radius 1em

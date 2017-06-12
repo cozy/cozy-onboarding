@@ -91,5 +91,5 @@ module.exports = class ServiceView extends ItemView
 
     showSuccess: (account) ->
         @ui.actions.hide()
-        @ui.result.text(account.auth.login)
+        @ui.result.text(if account.auth then account.auth.login else t('service connected'))
         @$el.addClass('done')

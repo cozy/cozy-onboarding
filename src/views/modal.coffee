@@ -43,6 +43,7 @@ module.exports = class ModalView extends ItemView
                     @show()
             else
                 @show()
+            observer.disconnect()
 
         @waiting = true
         observer.observe contentWrapperElement, childList: true
