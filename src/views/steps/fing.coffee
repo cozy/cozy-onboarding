@@ -9,4 +9,4 @@ module.exports = class FingView extends ServicesStepView
       id: 'fing-figure'
       svg: require '../../assets/sprites/fing.svg'
 
-    services: ['maif', 'edf', 'orangemobile', 'orangelivebox']
+    services: ['maif', 'edf']
