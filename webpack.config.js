@@ -9,5 +9,6 @@ module.exports = merge(
   require('./config/webpack.cozy-ui.config'),
   require('./config/webpack.pictures.config'),
   require('./config/webpack.copyfiles.config'),
-  require(production ? './config/webpack.config.prod' : './config/webpack.config.dev')
+  require(production ? './config/webpack.config.prod' : './config/webpack.config.dev'),
+  { entry: ['url-polyfill', './src/initialize'] }
 )
