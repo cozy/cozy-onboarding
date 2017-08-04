@@ -9,8 +9,6 @@ require('babel-polyfill')
 
 Polyglot = require 'node-polyglot'
 
-app = require './application'
-
 
 ###
 Polyglot initialization
@@ -52,5 +50,6 @@ Trigger locale initilization and starts application singleton.
 document.addEventListener 'DOMContentLoaded', ->
     initLocale()
     registerToken = getQueryStringParam('registerToken')
-    window.history.pushState({}, '', new URL(window.location.href).origin);
+    window.history.pushState({}, '', new URL(window.location.href).origin)
+    app = require './application'
     app.start registerToken: registerToken

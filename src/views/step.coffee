@@ -61,8 +61,7 @@ module.exports = class StepView extends LayoutView
 
     showError: (error) ->
         @ui.errors.html t if error and error.message then error.message else error
-        @ui.errors.show()
 
 
     hideError: () ->
-        @ui.errors.hide()
+        @ui.errors.empty()
