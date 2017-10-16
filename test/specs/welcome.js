@@ -29,22 +29,25 @@ const fetchRegisterToken = () => fetch(
 describe('BrowserStack Local Testing', function () {
   it('can check tunnel working', function (done) {
     console.log('can check tunnel working')
-    fetchRegisterToken()
-      .then(registerToken => {
-        console.log(`accessing http://onboarding.cozy.local:8080/?registerToken=${registerToken}`)
-        browser
-          .url(`http://onboarding.cozy.local:8080/?registerToken=${registerToken}`)
-
-        console.log('url.then')
-        browser.waitUntil(() => {
-          console.log('browser.waitUntil', browser.getUrl())
-          return browser.getUrl() !== `http://onboarding.cozy.local:8080/?registerToken=${registerToken}`
-        }, 30000)
-        .then(() => {
-          // assert(browser.getSource().match(/Up and running/i))
-          assert.equal(browser.getText('h1'), 'Welcome!')
-          done()
-        })
-      })
+    browser
+      .url(`http://cozy.tools:8080/`)
+    assert.equal(browser.getText('h1'), 'Welcome cozy!')
+    // fetchRegisterToken()
+    //   .then(registerToken => {
+    //     console.log(`accessing http://onboarding.cozy.local:8080/?registerToken=${registerToken}`)
+    //     browser
+    //       .url(`http://onboarding.cozy.local:8080/?registerToken=${registerToken}`)
+    //
+    //     console.log('url.then')
+    //     browser.waitUntil(() => {
+    //       console.log('browser.waitUntil', browser.getUrl())
+    //       return browser.getUrl() !== `http://onboarding.cozy.local:8080/?registerToken=${registerToken}`
+    //     }, 30000)
+    //     .then(() => {
+    //       // assert(browser.getSource().match(/Up and running/i))
+    //       assert.equal(browser.getText('h1'), 'Plouf!')
+    //       done()
+    //     })
+    //   })
   })
 })

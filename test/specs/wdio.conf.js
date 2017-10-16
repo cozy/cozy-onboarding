@@ -30,13 +30,15 @@ exports.config = {
     'os_version': '10',
     'browser': 'Chrome',
     'browser_version': '42.0',
-    'resolution': '1024x768'
+    'resolution': '1024x768',
+    'browserstack.local' : 'true'
   }, {
     'os': 'OS X',
     'os_version': 'Sierra',
     'browser': 'Safari',
     'browser_version': '10.0',
-    'resolution': '1024x768'
+    'resolution': '1024x768',
+    'browserstack.local' : 'true'
   }],
   sync: true,
   logLevel: 'verbose',
@@ -69,7 +71,6 @@ exports.config = {
   },
   user: 'browserstack_login',
   key: 'browserstack_password',
-  browserstackLocal: true,
   framework: 'mocha',
   mochaOpts: {
     ui: 'bdd',
