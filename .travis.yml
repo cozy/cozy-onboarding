@@ -19,6 +19,8 @@ addons:
     packages:
     - g++-4.8
     - python3.5
+  hosts:
+    - cozy.local
 cache:
   yarn: true
   directories:

@@ -1,0 +1,12 @@
+version: '2'
+services:
+  cozy:
+    container_name: cozy-onboarding
+    build: .
+    ports:
+      - "8080:8080"
+      - "5984:5984"
+    volumes:
+      - ../../build:/data/cozy-app/onboarding
+    stdin_open: true
+    tty: true
