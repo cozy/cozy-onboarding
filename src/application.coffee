@@ -12,6 +12,7 @@ AppLayout = require './views/app_layout'
 Onboarding = require './lib/onboarding'
 StepModel = require './models/step'
 ProgressionModel = require './models/progression'
+Reporter = require './lib/reporter'
 
 
 class App extends Application
@@ -36,6 +37,7 @@ class App extends Application
           cozy.client.init \
             cozyURL: "//#{@domain}",
             token: @contextToken
+          Reporter.configure(true, cozy.client, __SENTRY_USE_STACK_PROXY__)
 
         try
             @tracker = Piwik.getTracker(__PIWIK_TRACKER_URL__, __PIWIK_SITEID__)

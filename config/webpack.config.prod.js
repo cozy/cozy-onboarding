@@ -18,6 +18,9 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       __SERVER__: false,
+      __SENTRY_DSN__: JSON.stringify('https://f7318fd2c48f498895b5d2157ee53d1e@sentry.cozycloud.cc/4'),
+      __SENTRY_SECRET__: JSON.stringify('f4d15259bd934a07991e3b32cbdc7387'),
+      __SENTRY_USE_STACK_PROXY__: true,
       __DEVELOPMENT__: false,
       __DEVTOOLS__: false,
       __STACK_ASSETS__: true,

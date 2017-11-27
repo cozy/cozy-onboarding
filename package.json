@@ -14,6 +14,9 @@
     "prewatch": "npm run clean",
     "lint": "standard 'src/**/*.js' 'src/**/*.jsx'",
     "test": "mocha test/**/* --bail --reporter spec --compilers coffee:coffee-script/register --colors",
+    "pretest:browserstack": "(cd test/specs/ && docker-compose rm --force && docker-compose pull && docker-compose up --build -d && sleep 5)",
+    "test:browserstack": "(cd test/specs/ && ../../node_modules/.bin/wdio wdio.conf.js)",
+    "posttest:browserstack": "(cd test/specs/ && docker-compose down)",
     "watch": "NODE_ENV=development webpack --config webpack.config.js --watch --display-modules --display-chunks",
     "watch:server": "NODE_ENV=development webpack-dev-server --config webpack.config.js --port 8082 --display-modules --display-chunks --inline --hot"
   },
@@ -35,6 +38,7 @@
     "babel-core": "^6.0.0",
     "babel-jest": "^18.0.0",
     "babel-loader": "^6.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.0.0",
     "babel-polyfill": "^6.20.0",
     "babel-preset-env": "^1.0.2",
@@ -52,6 +56,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^18.0.0",
     "json-loader": "^0.5.0",
+    "node-fetch": "^1.6.3",
     "npm-run-all": "^3.1.0",
     "postcss": "^5.2.0",
     "postcss-discard-duplicates": "^2.0.2",
@@ -62,6 +67,9 @@
     "stylus": "^0.54.0",
     "stylus-loader": "^2.4.0",
     "svg-sprite-loader": "^0.0.31",
+    "wdio-browserstack-service": "^0.1.4",
+    "wdio-mocha-framework": "^0.5.9",
+    "webdriverio": "^4.6.2",
     "webpack": "^1.14.0",
     "webpack-dev-server": "^1.16.0",
     "webpack-merge": "^1.0.2"
@@ -82,6 +90,7 @@
     "marionette": "^0.0.0",
     "mocha": "^3.2.0",
     "node-polyglot": "^2.2.0",
+    "raven-js": "^3.17.0",
     "underscore": "^1.8.3",
     "url-polyfill": "^1.0.6"
   },
