@@ -55,7 +55,7 @@ module.exports = class ServiceView extends ItemView
 
 
         cozy.client.intents
-            .create 'CREATE', 'io.cozy.accounts', slug: @slug
+            .create 'CREATE', 'io.cozy.accounts', { slug: @slug, withCross: false }
             .start modal.getContentWrapper()
             .then (account) =>
                 modal.hide()
