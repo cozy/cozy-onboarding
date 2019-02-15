@@ -1,3 +1,9 @@
+# Deprecated
+
+This repository was used for the onboarding application of Cozy Cloud. It has been deprecated: the onboarding is no longer an application, it has been merged as a page of cozy-stack.
+
+---
+
 [![Travis build status shield](https://img.shields.io/travis/cozy/cozy-onboarding-v3/master.svg)](https://travis-ci.org/cozy/cozy-onboarding-v3)
 [![Github Release version shield](https://img.shields.io/github/tag/cozy/cozy-onboarding-v3.svg)](https://github.com/cozy/cozy-onboarding-v3/releases)
 
